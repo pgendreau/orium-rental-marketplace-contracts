@@ -44,7 +44,7 @@ library LibOriumSftMarketplace {
     uint256 public constant DEFAULT_FEE_PERCENTAGE = 2.5 ether;
 
     /// @dev Aavegotchi Wearable address (legacy, only valid on Polygon)
-    address public constant aavegotchiWearableAddress = 0x58de9AaBCaeEC0f69883C94318810ad79Cc6a44f;
+    address public constant aavegotchiWearableAddress = 0x052e6c114a166B0e91C2340370d72D4C33752B4b;
 
     /**
      * @notice Gets the rental offer hash.

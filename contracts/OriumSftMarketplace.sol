@@ -23,7 +23,7 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
     address public oriumMarketplaceRoyalties;
 
     /// @dev Aavegotchi Wearable address (legacy, only valid on Polygon)
-    address public constant aavegotchiWearableAddress = 0x58de9AaBCaeEC0f69883C94318810ad79Cc6a44f;
+    address constant aavegotchiWearableAddress = 0x052e6c114a166B0e91C2340370d72D4C33752B4b;
 
     /// @dev hashedOffer => bool
     mapping(bytes32 => bool) public isCreated;
