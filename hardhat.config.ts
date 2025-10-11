@@ -52,7 +52,7 @@ const BASE_CONFIG = {
         network: "base",
         chainId: 8453,
         urls: {
-          apiURL: "https://api.etherscan.io/v2/api?chainid=8453", // V2 API URL for mainnet
+          apiURL: "https://api.etherscan.io/v2/api", // V2 API URL for mainnet
           browserURL: "https://basescan.org",     // V2 Browser URL for mainnet
         },
       },
