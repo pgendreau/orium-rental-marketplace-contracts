@@ -118,13 +118,23 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
 
     /** ============================ Rental Functions  ================================== **/
 
+    /**
+     * @notice Creates a batch of rental offers.
+     * @param _offers The array of rental offer structs.
+     */
+    function batchCreateRentalOffer(RentalOffer[] memory _offers) external whenNotPaused {
+      for (uint256 i = 0; i < _offers.length; i++) {
+        createRentalOffer(_offers[i]);
+      }
+    }
+
     /** ######### Setters ########### **/
     /**
      * @notice Creates a rental offer.
      * @dev To optimize for gas, only the offer hash is stored on-chain
      * @param _offer The rental offer struct.
      */
-    function createRentalOffer(RentalOffer memory _offer) external whenNotPaused {
+    function createRentalOffer(RentalOffer memory _offer) public whenNotPaused {
         address _rolesRegistryAddress = IOriumMarketplaceRoyalties(oriumMarketplaceRoyalties).sftRolesRegistryOf(
             _offer.tokenAddress
         );
@@ -162,6 +172,21 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
     }
 
     /**
+     * @notice Accepts a batch of rental offers.
+     * @param _offers The array of rental offers struct. It should be the same as the ones used to create the offer.
+     * @param _durations The duration of the rental.
+     */
+    // function batchAcceptRentalOffer(
+    //     RentalOffer[] calldata _offers,
+    //     uint64[] calldata _durations
+    // ) external payable whenNotPaused {
+    //   require(_offers.length == _durations.length, 'Arrays must be the same length');
+    //   for (uint256 i = 0; i < _offers.length; i++) {
+    //     acceptRentalOffer(_offers[i], _durations[i]);
+    //   }
+    // }
+
+    /**
      * @notice Accepts a rental offer.
      * @dev The borrower can be address(0) to allow anyone to rent the SFT.
      * @param _offer The rental offer struct. It should be the same as the one used to create the offer.
@@ -170,7 +195,7 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
     function acceptRentalOffer(
         RentalOffer calldata _offer,
         uint64 _duration
-    ) external payable whenNotPaused {
+    ) public payable whenNotPaused {
         bytes32 _offerHash = LibOriumSftMarketplace.hashRentalOffer(_offer);
         uint64 _expirationDate = uint64(block.timestamp + _duration);
         LibOriumSftMarketplace.validateAcceptRentalOffer(
@@ -204,10 +229,20 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
     }
 
     /**
+     * @notice Delist a batch of rental offers.
+     * @param _offers The array of rental offer structs. It should be the same as the ones used to create the offer.
+     */
+    function batchDelistRentalOffer(RentalOffer[] calldata _offers) external whenNotPaused {
+      for (uint256 i = 0; i < _offers.length; i++) {
+        delistRentalOffer(_offers[i]);
+      }
+    }
+
+    /**
      * @notice Delist a rental offer.
      * @param _offer The rental offer struct. It should be the same as the one used to create the offer.
      */
-    function delistRentalOffer(RentalOffer calldata _offer) external whenNotPaused {
+    function delistRentalOffer(RentalOffer calldata _offer) public whenNotPaused {
         _delistRentalOffer(_offer);
     }
 
