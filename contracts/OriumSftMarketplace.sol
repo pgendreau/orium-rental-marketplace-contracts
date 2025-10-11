@@ -275,11 +275,11 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
     function endRental(RentalOffer calldata _offer) external whenNotPaused {
         bytes32 _offerHash = LibOriumSftMarketplace.hashRentalOffer(_offer);
 
-        require(isCreated[_offerHash], 'OriumSftMarketplace: Offer not created');
-        require(msg.sender == rentals[_offerHash].borrower, 'OriumSftMarketplace: Only borrower can end a rental');
+        require(isCreated[_offerHash], 'Offer not created');
+        require(msg.sender == rentals[_offerHash].borrower, 'Only borrower can end a rental');
         require(
             rentals[_offerHash].expirationDate > block.timestamp,
-            'OriumSftMarketplace: There are no active Rentals'
+            'There are no active Rentals'
         );
 
         IERC7589 _rolesRegistry = IERC7589(
@@ -409,15 +409,15 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
                 _offer.tokenAddress,
                 _offer.feeTokenAddress
             ),
-            'OriumSftMarketplace: tokenAddress is not trusted'
+            'tokenAddress is not trusted'
         );
         require(
             _offer.deadline <= block.timestamp + IOriumMarketplaceRoyalties(oriumMarketplaceRoyalties).maxDuration() &&
                 _offer.deadline > block.timestamp,
-            'OriumSftMarketplace: Invalid deadline'
+            'Invalid deadline'
         );
         LibOriumSftMarketplace.validateOffer(_offer);
-        require(nonceDeadline[_offer.lender][_offer.nonce] == 0, 'OriumSftMarketplace: nonce already used');
+        require(nonceDeadline[_offer.lender][_offer.nonce] == 0, 'nonce already used');
 
         if (_offer.commitmentId != 0) {
             uint256 _commitmentNonce = commitmentIdToNonce[_rolesRegistryAddress][_offer.commitmentId];
@@ -425,7 +425,7 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
             if (_commitmentNonce != 0) {
                 require(
                     nonceDeadline[_offer.lender][_commitmentNonce] < block.timestamp,
-                    'OriumSftMarketplace: commitmentId is in an active rental offer'
+                    'commitmentId is in an active rental offer'
                 );
             }
 
@@ -440,7 +440,7 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
         } else {
             require(
                 IERC1155(_offer.tokenAddress).balanceOf(msg.sender, _offer.tokenId) >= _offer.tokenAmount,
-                'OriumSftMarketplace: caller does not have enough balance for the token'
+                'caller does not have enough balance for the token'
             );
         }
     }
@@ -477,7 +477,7 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
         uint256 _lenderAmount = _feeAmount - _royaltyAmount - _marketplaceFeeAmount;
 
         if (_feeTokenAddress == address(0)) {
-            require(msg.value == _feeAmount, 'OriumSftMarketplace: Insufficient native token amount');
+            require(msg.value == _feeAmount, 'Insufficient native token amount');
             payable(owner()).transfer(_marketplaceFeeAmount);
             payable(_royaltyInfo.treasury).transfer(_royaltyAmount);
             payable(_lenderAddress).transfer(_lenderAmount);
@@ -500,11 +500,11 @@ contract OriumSftMarketplace is Initializable, OwnableUpgradeable, PausableUpgra
      */
     function _delistRentalOffer(RentalOffer calldata _offer) internal {
         bytes32 _offerHash = LibOriumSftMarketplace.hashRentalOffer(_offer);
-        require(isCreated[_offerHash], 'OriumSftMarketplace: Offer not created');
-        require(msg.sender == _offer.lender, 'OriumSftMarketplace: Only lender can cancel a rental offer');
+        require(isCreated[_offerHash], 'Offer not created');
+        require(msg.sender == _offer.lender, 'Only lender can cancel a rental offer');
         require(
             nonceDeadline[_offer.lender][_offer.nonce] > block.timestamp,
-            'OriumSftMarketplace: Nonce expired or not used yet'
+            'Nonce expired or not used yet'
         );
         nonceDeadline[msg.sender][_offer.nonce] = uint64(block.timestamp);
         emit RentalOfferCancelled(_offer.lender, _offer.nonce);
