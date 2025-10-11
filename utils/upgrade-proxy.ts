@@ -2,7 +2,7 @@ import hre, { ethers, network, upgrades } from 'hardhat'
 import { print, confirmOrDie, colors } from './misc'
 import addresses, { Network } from '../addresses'
 import { updateJsonFile } from './json'
-import { kmsDeployer, kmsProvider } from './deployer'
+import { provider, deployer } from './deployer'
 
 const NETWORK = network.name as Network
 
@@ -20,9 +20,9 @@ export async function upgradeProxy(
 ) {
   if (CUSTOM_FEE_DATA !== undefined) {
     const FEE_DATA: any = CUSTOM_FEE_DATA
-    kmsProvider.getFeeData = async () => FEE_DATA
+    provider.getFeeData = async () => FEE_DATA
   }
-  const deployerAddress = await kmsDeployer.getAddress()
+  const deployerAddress = await deployer.getAddress()
   const libraries: { [key: string]: string } = {}
 
   await confirmOrDie(
@@ -33,7 +33,7 @@ export async function upgradeProxy(
     print(colors.highlight, 'Deploying libraries...')
 
     for (const LIBRARY_CONTRACT_NAME of LIBRARIES_CONTRACT_NAME) {
-      const LibraryFactory = await ethers.getContractFactory(LIBRARY_CONTRACT_NAME, kmsDeployer)
+      const LibraryFactory = await ethers.getContractFactory(LIBRARY_CONTRACT_NAME, deployer)
       const library = await LibraryFactory.deploy()
       await library.waitForDeployment()
       libraries[LIBRARY_CONTRACT_NAME] = await library.getAddress()
@@ -45,13 +45,13 @@ export async function upgradeProxy(
   print(colors.highlight, 'Upgrading proxy contract...')
   const ContractFactory = await ethers.getContractFactory(PROXY_CONTRACT_NAME, {
     libraries,
-    signer: kmsDeployer,
+    signer: deployer,
   })
   const contract = await upgrades.upgradeProxy(addresses[NETWORK][PROXY_CONTRACT_NAME].address, ContractFactory, {
     unsafeAllowLinkedLibraries: true,
   })
   await contract.waitForDeployment()
-  print(colors.success, `${PROXY_CONTRACT_NAME} upgraded to: ${contract.address}`)
+  print(colors.success, `${PROXY_CONTRACT_NAME} upgraded to: ${contract.getAddress()}`)
 
   print(colors.highlight, 'Updating config files...')
   const deploymentInfo: any = {

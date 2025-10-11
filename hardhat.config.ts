@@ -14,10 +14,12 @@ const {
   DEFENDER_TEAM_API_SECRET_KEY,
   MOONBEAM_PROVIDER_URL,
   POLYGON_PROVIDER_URL,
+  BASE_PROVIDER_URL,
   DEV_PRIVATE_KEY,
   PROD_PRIVATE_KEY,
   POLYGONSCAN_API_KEY,
   ETHER_SCAN_API_KEY,
+  BASESCAN_API_KEY,
   CRONOSSCAN_API_KEY,
   MOONSCAN_API_KEY,
   CRONOS_TESTNET_PROVIDER_URL,
@@ -37,30 +39,42 @@ const BASE_CONFIG = {
   etherscan: {
     apiKey: {
       polygon: POLYGONSCAN_API_KEY,
-      goerli: ETHER_SCAN_API_KEY,
-      cronosTestnet: CRONOSSCAN_API_KEY,
-      cronos: CRONOSSCAN_API_KEY,
-      moonbeam: MOONSCAN_API_KEY,
-      arbitrumOne: ARBITRUM_API_KEY,
+      base: BASESCAN_API_KEY,
+      // goerli: ETHER_SCAN_API_KEY,
+      // cronosTestnet: CRONOSSCAN_API_KEY,
+      // cronos: CRONOSSCAN_API_KEY,
+      // moonbeam: MOONSCAN_API_KEY,
+      // arbitrumOne: ARBITRUM_API_KEY,
     },
     customChains: [
+      // For Base Mainnet
       {
-        network: 'cronosTestnet',
-        chainId: 338,
+        network: "base",
+        chainId: 8453,
         urls: {
-          apiURL: 'https://cronos.org/explorer/testnet3/api',
-          blockExplorerURL: 'https://cronos.org/explorer/testnet3',
+          apiURL: "https://api.etherscan.io/v2/api?chainid=8453", // V2 API URL for mainnet
+          browserURL: "https://basescan.org",     // V2 Browser URL for mainnet
         },
       },
-      {
-        network: 'cronos',
-        chainId: 25,
-        urls: {
-          apiURL: 'https://api.cronoscan.com/api',
-          blockExplorerURL: 'https://cronos.org/explorer',
-        },
-      },
-    ],
+    ],   
+    // customChains: [
+    //   {
+    //     network: 'cronosTestnet',
+    //     chainId: 338,
+    //     urls: {
+    //       apiURL: 'https://cronos.org/explorer/testnet3/api',
+    //       blockExplorerURL: 'https://cronos.org/explorer/testnet3',
+    //     },
+    //   },
+    //   {
+    //     network: 'cronos',
+    //     chainId: 25,
+    //     urls: {
+    //       apiURL: 'https://api.cronoscan.com/api',
+    //       blockExplorerURL: 'https://cronos.org/explorer',
+    //     },
+    //   },
+    // ],
   },
   networks: {
     hardhat: {
@@ -102,31 +116,36 @@ const PROD_CONFIG = {
       accounts: [PROD_PRIVATE_KEY],
       pollingInterval: 15000,
     },
-    cronosTestnet: {
-      chainId: 338,
-      url: CRONOS_TESTNET_PROVIDER_URL,
-      accounts: [DEV_PRIVATE_KEY],
-    },
-    cronos: {
-      chainId: 25,
-      url: CRONOS_PROVIDER_URL,
+    // cronosTestnet: {
+    //   chainId: 338,
+    //   url: CRONOS_TESTNET_PROVIDER_URL,
+    //   accounts: [DEV_PRIVATE_KEY],
+    // },
+    // cronos: {
+    //   chainId: 25,
+    //   url: CRONOS_PROVIDER_URL,
+    //   accounts: [PROD_PRIVATE_KEY],
+    // },
+    // moonbeam: {
+    //   chainId: 1284,
+    //   url: MOONBEAM_PROVIDER_URL,
+    //   accounts: [DEV_PRIVATE_KEY],
+    // },
+    // arbitrum: {
+    //   chainId: 42161,
+    //   url: ARBITRUM_ONE_URL,
+    //   accounts: [DEV_PRIVATE_KEY],
+    // },
+    base: {
+      chainId: 8453,
+      url: BASE_PROVIDER_URL,
       accounts: [PROD_PRIVATE_KEY],
     },
-    moonbeam: {
-      chainId: 1284,
-      url: MOONBEAM_PROVIDER_URL,
-      accounts: [DEV_PRIVATE_KEY],
-    },
-    arbitrum: {
-      chainId: 42161,
-      url: ARBITRUM_ONE_URL,
-      accounts: [DEV_PRIVATE_KEY],
-    },
   },
-  defender: {
-    apiKey: DEFENDER_TEAM_API_KEY,
-    apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
-  },
+  // defender: {
+  //   apiKey: DEFENDER_TEAM_API_KEY,
+  //   apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
+  // },
 }
 
 /**

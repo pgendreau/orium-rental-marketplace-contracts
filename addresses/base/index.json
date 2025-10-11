@@ -1,0 +1,41 @@
+{
+	"Multisig": {
+		"address": "0x5DaFd030C07844741157CcDcc366306822dd5FF3"
+	},
+	"RolesRegistry": {
+		"address": "0x052e6c114a166B0e91C2340370d72D4C33752B4b"
+	},
+	"SftRolesRegistrySingleRole": {
+		"address": "0x052e6c114a166B0e91C2340370d72D4C33752B4b"
+	},
+	"KMSDeployer": {
+		"address": "0x5DaFd030C07844741157CcDcc366306822dd5FF3"
+	},
+	"NftRentalMarketplace": {
+		"address": "",
+		"operator": "",
+		"implementation": "",
+		"proxyAdmin": ""
+	},
+	"ImmutableOwnerCreate2Factory": {
+		"address": "0x066f91a9Aa4C33D4ea4c12aBee6f4cb4e919F71d"
+	},
+	"OriumMarketplaceRoyalties": {
+		"address": "0xeFb901b5933ccde04d207B6bFb15F89c67145C3a",
+		"operator": "0x5DaFd030C07844741157CcDcc366306822dd5FF3",
+		"implementation": "0xA463Bfcd554d0c4D1cCb9147B8C93De72A9A8ae7",
+		"proxyAdmin": "0x781c61ae4fB0413c24b889546501060926E9f9ad"
+	},
+	"OriumSftMarketplace": {
+		"address": "0x7F729a049cD318458A4ed1145E1fA7661847edfE",
+		"operator": "0x5DaFd030C07844741157CcDcc366306822dd5FF3",
+		"implementation": "0x32EFD2fBb0a43eE1918621D0544EFbd2c7F77beE",
+		"proxyAdmin": "0x2cf37995794Fb79095a3bfa4dA43B2757F7B7Bc7",
+		"libraries": {
+			"LibOriumSftMarketplace": "0xB1f1Cb69e8dFb75e73BDeDC764459bDAD4eFE96a"
+		}
+	},
+	"ERC7432WrapperForERC4907": {
+		"address": ""
+	}
+}

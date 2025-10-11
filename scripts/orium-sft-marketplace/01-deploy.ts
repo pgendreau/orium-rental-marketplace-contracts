@@ -1,31 +1,22 @@
 import hre, { ethers, network, upgrades } from 'hardhat'
-import { AwsKmsSigner } from '@govtechsg/ethers-aws-kms-signer'
 import { confirmOrDie, print, colors } from '../../utils/misc'
 import { updateJsonFile } from '../../utils/json'
 import addresses, { Network } from '../../addresses'
-
-const kmsCredentials = {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'AKIAxxxxxxxxxxxxxxxx', // credentials for your IAM user with KMS access
-  secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET || 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // credentials for your IAM user with KMS access
-  region: 'us-east-1', // region of your KMS key
-  keyId: process.env.AWS_KMS_KEY_ID || 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', // KMS key id
-}
+import { provider, deployer } from '../../utils/deployer'
 
 const NETWORK = network.name as Network
 const { Multisig, OriumMarketplaceRoyalties } = addresses[NETWORK]
 
 const CONTRACT_NAME = 'OriumSftMarketplace'
-const OPERATOR_ADDRESS = Multisig.address
+const OPERATOR_ADDRESS = "0x5DaFd030C07844741157CcDcc366306822dd5FF3"
 const INITIALIZER_ARGUMENTS: string[] = [OPERATOR_ADDRESS, OriumMarketplaceRoyalties.address]
 
 const networkConfig: any = network.config
-const provider = new ethers.providers.JsonRpcProvider(networkConfig.url || '')
 /* const FEE_DATA: any = {
   maxFeePerGas: ethers.utils.parseUnits('80', 'gwei'),
   maxPriorityFeePerGas: ethers.utils.parseUnits('50', 'gwei'),
 }
 provider.getFeeData = async () => FEE_DATA */
-const deployer = new AwsKmsSigner(kmsCredentials).connect(provider)
 
 async function main() {
   const deployerAddress = await deployer.getAddress()
@@ -33,27 +24,28 @@ async function main() {
 
   const LibraryFactory = await ethers.getContractFactory('LibOriumSftMarketplace', deployer)
   const library = await LibraryFactory.deploy()
-  await library.deployed()
+  await library.waitForDeployment()
 
   const ContractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
     signer: deployer,
     libraries: {
-      LibOriumSftMarketplace: library.address,
+      LibOriumSftMarketplace: await library.getAddress(),
     },
   })
   const contract = await upgrades.deployProxy(ContractFactory, INITIALIZER_ARGUMENTS, {
     unsafeAllowLinkedLibraries: true,
   })
-  await contract.deployed()
-  print(colors.success, `${CONTRACT_NAME} deployed to: ${contract.address}`)
+  await contract.waitForDeployment()
+  const contractAddress = await contract.getAddress()
+  print(colors.success, `${CONTRACT_NAME} deployed to: ${contractAddress}`)
 
   print(colors.highlight, 'Updating config files...')
   const deploymentInfo = {
     [CONTRACT_NAME]: {
-      address: contract.address,
+      address: contractAddress,
       operator: OPERATOR_ADDRESS,
-      implementation: await upgrades.erc1967.getImplementationAddress(contract.address),
-      proxyAdmin: await upgrades.erc1967.getAdminAddress(contract.address),
+      implementation: await upgrades.erc1967.getImplementationAddress(contractAddress),
+      proxyAdmin: await upgrades.erc1967.getAdminAddress(contractAddress),
     },
   }
 
@@ -89,7 +81,7 @@ async function main() {
 
   print(colors.highlight, 'Verifying contract on Etherscan...')
   await hre.run('verify:verify', {
-    address: contract.address,
+    address: contractAddress,
     constructorArguments: [],
   })
   print(colors.success, 'Contract verified!')

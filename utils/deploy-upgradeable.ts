@@ -1,8 +1,11 @@
+import * as dotenv from 'dotenv'
 import hre, { ethers, network, upgrades } from 'hardhat'
 import { print, confirmOrDie, colors } from './misc'
 import { Network } from '../addresses'
 import { updateJsonFile } from './json'
-import { kmsDeployer, kmsProvider } from './deployer'
+import { provider, deployer } from './deployer'
+
+dotenv.config()
 
 const NETWORK = network.name as Network
 
@@ -26,7 +29,7 @@ export async function deployUpgradeableContract(
     const FEE_DATA: any = CUSTOM_FEE_DATA
     kmsProvider.getFeeData = async () => FEE_DATA
   }
-  const deployerAddress = await kmsDeployer.getAddress()
+  const deployerAddress = "0x5DaFd030C07844741157CcDcc366306822dd5FF3"
   const libraries: { [key: string]: string } = {}
 
   await confirmOrDie(
@@ -37,7 +40,7 @@ export async function deployUpgradeableContract(
     print(colors.highlight, 'Deploying libraries...')
 
     for (const LIBRARY_CONTRACT_NAME of LIBRARIES_CONTRACT_NAME) {
-      const LibraryFactory = await ethers.getContractFactory(LIBRARY_CONTRACT_NAME, kmsDeployer)
+      const LibraryFactory = await ethers.getContractFactory(LIBRARY_CONTRACT_NAME, deployer)
       const library = await LibraryFactory.deploy()
       await library.waitForDeployment()
       libraries[LIBRARY_CONTRACT_NAME] = await library.getAddress()
@@ -50,7 +53,7 @@ export async function deployUpgradeableContract(
   console.log('INITIALIZER_ARGUMENTS', INITIALIZER_ARGUMENTS)
   const ContractFactory = await ethers.getContractFactory(PROXY_CONTRACT_NAME, {
     libraries,
-    signer: kmsDeployer,
+    signer: deployer,
   })
   const contract = await upgrades.deployProxy(ContractFactory, INITIALIZER_ARGUMENTS, {
     unsafeAllowLinkedLibraries: true,
@@ -93,7 +96,7 @@ export async function deployUpgradeableContract(
         type: 'function',
       },
     ]
-    const proxyAdminContract = new ethers.Contract(deploymentInfo[PROXY_CONTRACT_NAME].proxyAdmin, abi, kmsDeployer)
+    const proxyAdminContract = new ethers.Contract(deploymentInfo[PROXY_CONTRACT_NAME].proxyAdmin, abi, deployer)
     await proxyAdminContract.transferOwnership(OPERATOR_ADDRESS)
     print(colors.success, `Proxy admin ownership transferred to: ${OPERATOR_ADDRESS}`)
   } catch (e) {
